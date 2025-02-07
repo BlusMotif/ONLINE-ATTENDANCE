@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Attendance System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            background-color: #007bff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo img {
+            max-width: 100px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input[type="text"], input[type="date"], input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #ff8c00; /* Orange */
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #e07b00; /* Darker Orange */
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #007bff; /* Blue */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3; /* Darker Blue */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo">
+            <img src="KTU LOGO.PNG" alt="School Logo"> <!-- Replace with actual logo path -->
+        </div>
+        <h1>COMPUTER SCI BTECH (300) ATTENDANCE SYSTEM</h1>
+        <form id="attendance-form">
+            <div class="form-group">
+                <label for="student-name">Full Name</label>
+                <input type="text" id="student-name" required>
+            </div>
+            <div class="form-group">
+                <label for="index-number">Index Number</label>
+                <input type="text" id="index-number" required>
+            </div>
+            <div class="form-group">
+                <label for="attendance-date">Date</label>
+                <input type="date" id="attendance-date" required>
+            </div>
+            <input type="submit" value="Mark Attendance">
+        </form>
+
+        <div id="attendance-list">
+            <h2>Attendance Records</h2>
+            <table id="records-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Full Name</th>
+                        <th>Index Number</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="records"></tbody>
+            </table>
+        </div>
+        <button id="export-btn">Print Attendance</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.11/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        const { jsPDF } = window.jspdf;
+        const attendanceForm = document.getElementById('attendance-form');
+        const recordsList = document.getElementById('records');
+        const exportBtn = document.getElementById('export-btn');
+
+        const attendanceRecords = new Set(); // To avoid duplicates
+
+        attendanceForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const studentName = document.getElementById('student-name').value.trim();
+            const indexNumber = document.getElementById('index-number').value.trim();
+            const attendanceDate = document.getElementById('attendance-date').value;
+
+            // Check for duplicates
+            const recordKey = `${studentName}-${indexNumber}`;
+            if (attendanceRecords.has(recordKey)) {
+                alert("This student has already marked attendance.");
+                return;
+            }
+
+            attendanceRecords.add(recordKey);
+
+            const rowCount = recordsList.children.length + 1; // Count rows for numbering
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${rowCount}</td><td>${studentName}</td><td>${indexNumber}</td><td>${attendanceDate}</td>`;
+            recordsList.appendChild(tr);
+
+            attendanceForm.reset();
+        });
+
+        exportBtn.addEventListener('click', function() {
+            const printWindow = window.open('', '', 'width=600,height=400');
+            printWindow.document.write('<html><head><title>Attendance Records</title></head><body>');
+            printWindow.document.write('<h1>Attendance Records</h1>');
+            printWindow.document.write(document.getElementById('records-table').outerHTML);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        });
+    </script>
+    <footer style="text-align: center; margin-top: 20px; color: #777;">
+        Designed by Eleblu Nunana
+    </footer>
+
+</body>
+</html>
